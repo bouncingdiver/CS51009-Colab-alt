@@ -2,23 +2,23 @@
 # setup
 ##########
 
-# # Downloads the dataset files.
-# import gdown
+# Downloads the dataset files.
+import gdown
 
-# files = {
-#     'timeseries.csv': '1IuQib_tPj83kV8XTbCoL6goOZuyOgRB3',
-#     'sleep.csv': '17ild_0EAWa83siQBbKlZX1uOeeon2Ikx',
-#     'subjects.csv': '1Uet3e6BQRvinszc8FEaZJC0YH1dcKYry',
-# }
-# for name, file_id in files.items():
-#     gdown.download(id=file_id, output=name, quiet=True)
+files = {
+    'timeseries.csv': '1IuQib_tPj83kV8XTbCoL6goOZuyOgRB3',
+    'sleep.csv': '17ild_0EAWa83siQBbKlZX1uOeeon2Ikx',
+    'subjects.csv': '1Uet3e6BQRvinszc8FEaZJC0YH1dcKYry',
+}
+for name, file_id in files.items():
+    gdown.download(id=file_id, output=name, quiet=True)
 
-# # Checks that all three files downloaded properly.
-# import os
+# Checks that all three files downloaded properly.
+import os
 
-# for f in ['timeseries.csv', 'sleep.csv', 'subjects.csv']:
-#     assert os.path.exists(f) and os.path.getsize(f) > 1_000, f'{f} did not download properly. Rerun the download cell.'
-# print('All files downloaded.')
+for f in ['timeseries.csv', 'sleep.csv', 'subjects.csv']:
+    assert os.path.exists(f) and os.path.getsize(f) > 1_000, f'{f} did not download properly. Rerun the download cell.'
+print('All files downloaded.')
 
 # Imports the datasets and displays the first 5 rows of the time series.
 import numpy as np
