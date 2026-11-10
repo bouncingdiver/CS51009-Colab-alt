@@ -20,6 +20,11 @@ for f in ['timeseries.csv', 'sleep.csv', 'subjects.csv']:
     assert os.path.exists(f) and os.path.getsize(f) > 1_000, f'{f} did not download properly. Rerun the download cell.'
 print('All files downloaded.')
 
+
+#############
+# end of setup
+#############
+
 # Imports the datasets and displays the first 5 rows of the time series.
 import numpy as np
 import pandas as pd
@@ -28,15 +33,11 @@ timeseries = pd.read_csv('timeseries.csv', parse_dates=['timestamp'])
 sleep = pd.read_csv('sleep.csv')
 subjects = pd.read_csv('subjects.csv')
 
-
-#############
-# end of setup
-#############
-
+# columns needed here are: user_id, hr(?), vector magnitude (in place of movement axis), inclinometer info, day, time
 print(timeseries.head())
 
-# this is our target dataset, columns needed from here are: user_id, in bed date, in bed time, out of
-# print(sleep.head())
+# this is our target dataset, columns needed from here are: user_id, in bed date, in bed time, out of bed time (this is our ground truth)
+print(sleep.head())
 
 # subjects is not needed, except for maybe their age and gender
-# print(subjects.head())
+print(subjects.head())
