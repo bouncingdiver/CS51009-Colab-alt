@@ -109,7 +109,7 @@ print(out_df.head())
 # getting start minute
 current_minute = out_df.iloc[0]["timestamp"].minute
 minute_datapoints = []
-minute_agg_alt = pd.DataFrame(columns=["user_id", "timestamp", "avg_hr", "avg_vector_magnitude", "sum_steps"])
+minute_aggregated_data = pd.DataFrame(columns=["user_id", "timestamp", "avg_hr", "avg_vector_magnitude", "sum_steps"])
 
 # getting intial other data
 current_user_id = out_df.iloc[0]["user_id"]
@@ -128,6 +128,54 @@ def sum_values(datapoints, position):
         total += row[position]
     return total
 
+def determineInclinometerValue(datapoints):
+    off = 0
+    standing = 0
+    sitting = 0
+    lying = 0
+
+    for row in datapoints:
+        match row.clean_inclinometer:
+            case 0:
+                off += 1
+            case 1:
+                standing += 1
+            case 2:
+                sitting += 1
+            case 3:
+                lying += 1
+
+    if off >= (len(datapoints) / 2):
+        return 0
+
+    values = [off, standing, sitting, lying]
+    sorted_values = values.copy()
+    sorted_values.sort()
+    rev_values = values.copy()
+    rev_values.reverse()
+
+    # if the two largest values are not equal (ie there is no tie) return the index position of the largest
+    if (sorted_values[3] == sorted_values[2]):
+        return (values.index(sorted_values[3]))
+
+    # we have a tie, deference is given to the position closest to sleeping
+    # reverse the list (so the sleeping value is first in the list), then index the largest number found (index() returns the index of the first value matched), then return its position in the original list
+    n = rev_values.index(sorted_values[0])
+
+    match n:
+        case 0:
+            return 3
+        case 1:
+            return 2
+        case 2:
+            return 1
+        case 3:
+            return 0
+    
+
+
+
+
 for row in out_df.itertuples():
     if (row.timestamp.minute == current_minute):
         minute_datapoints.append(row)
@@ -141,9 +189,10 @@ for row in out_df.itertuples():
             avg_hr = average_values(minute_datapoints, 5)
             avg_vector_magnitude = average_values(minute_datapoints, 4)
             sum_steps = sum_values(minute_datapoints, 6)
+            minute_inclinometer_value = determineInclinometerValue(minute_datapoints)
 
-            new_row = pd.DataFrame({"user_id": [current_user_id], "timestamp": [current_timestamp], "avg_hr": [avg_hr], "avg_vector_magnitude": [avg_vector_magnitude], "sum_steps": [sum_steps]})
-            minute_agg_alt = pd.concat([minute_agg_alt, new_row], ignore_index=True)
+            new_row = pd.DataFrame({"user_id": [current_user_id], "timestamp": [current_timestamp], "avg_hr": [avg_hr], "avg_vector_magnitude": [avg_vector_magnitude], "sum_steps": [sum_steps], "inclinometer_value": [minute_inclinometer_value]})
+            minute_aggregated_data = pd.concat([minute_aggregated_data, new_row], ignore_index=True)
 
             # updating current values
             current_user_id = row.user_id
@@ -153,26 +202,11 @@ for row in out_df.itertuples():
             # clear datapoints for next minute
             minute_datapoints.clear()
 
-print(minute_agg_alt.head())
-minute_agg_alt.to_csv("out_df.csv", header=True, index=False)
+print(minute_aggregated_data.head())
+minute_aggregated_data.to_csv("cleaned_minutes.csv", header=True, index=False)
 
 
 
-# example of concatenation
-# minute_df = pd.DataFrame(columns=["user_id", "hr"])
-
-# row = pd.DataFrame({"user_id": [1], "hr": [100]})
-# row1 = pd.DataFrame({"user_id": [1], "hr": [90]})
-# row2 = pd.DataFrame({"user_id": [1], "hr": [80]})
-# row3 = pd.DataFrame({"user_id": [1], "hr": [84]})
-
-# output = pd.concat([minute_df, row, row1, row2, row3], ignore_index=True)
-# print(output.head())
-
-# new_col = ["1", "2", "3", "4"]
-
-# output.insert(1, "new_col", new_col)
-# print(output.head())
 
 
 
