@@ -10,7 +10,7 @@ n_off = 0
 
 # iterating over lines in dataframe
 for row in timeseries.itertuples():
-    if row.Inclinometer_Off == 1:
+    if row.InclinometerOff == 1:
         n_off += 1
 
 
